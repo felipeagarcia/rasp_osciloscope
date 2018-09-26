@@ -6,7 +6,7 @@ import math
 
 # TODO:
 # fix compute_fall_time
-# fix frequency and period calc
+# fix frequency and period calc -> use FFT !!!!!!
 # build UI
 # acquire real signals
 
