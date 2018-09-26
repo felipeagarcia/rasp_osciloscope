@@ -4,17 +4,25 @@ import matplotlib.animation as animation
 from math import pi
 import math
 
+# TODO:
+# fix compute_fall_time
+# fix frequency and period calc
+# build UI
+# acquire real signals
+
 class Channel():
-	def __init__(self, identifier, color, signal):
+	def __init__(self, identifier, color, signal, sample_rate, duration):
 		self.id = identifier
 		self.color = color
 		self.signal = signal
+		self.sample_rate = sample_rate
+		self.duration = duration
 
 	def show(self, step=0.1):
 		auto_correlation = np.correlate(self.signal, self.signal, mode='full')
 		# limiting signal by its period
-		y = self.signal[:math.ceil(max(auto_correlation))].copy()
-		x = np.linspace(0, len(y), num=len(y))
+		y = self.signal[:math.ceil(max(auto_correlation)/self.get_frequency())].copy()
+		x = np.linspace(0, self.get_period(), num=len(y))
 		plt.plot(x, y, self.color)
 		plt.xlabel("Time (s)")
 		plt.ylabel("Voltage (V)")
@@ -27,7 +35,7 @@ class Channel():
 		auto_correlation = np.correlate(self.signal, self.signal, mode='full')
 		# limiting signal by its period
 		y = self.signal[:math.ceil(max(auto_correlation))].copy()
-		x = np.linspace(0, len(y), num=len(y))
+		x = np.linspace(0, self.duration, num=len(y))
 		line, = ax.plot(x, y, self.color)
 
 
@@ -56,47 +64,63 @@ class Channel():
 	def get_peak_to_peak(self):
 		return (self.get_max() - self.get_min())
 
-	def get_period(self):
-		auto_correlation = np.correlate(self.signal, self.signal, mode='full')
-		return max(auto_correlation)
-
 	def get_frequency(self):
-		return 1/self.get_period()
+		auto_correlation = np.correlate(self.signal, self.signal, mode='full')
+		return np.argmax(auto_correlation)/self.sample_rate
+
+	def get_period(self):
+		return 1/self.get_frequency()
 
 	def compute_histogram(self, plot=True):
-		histogram, bins = np.histogram(self.signal, density=True)
-		x = np.linspace(0, len(histogram), len(histogram))
-		maximum_val = max(histogram, key=abs)
-		histogram = np.divide(histogram, maximum_val)
-		maximum_val = max(histogram, key=abs)
-		minimum_val = min(histogram, key=abs)
-		base_val, top_val = minimum_val, maximum_val
+		histogram, bins = np.histogram(self.signal, bins=len(self.signal))
+		x = np.linspace(0, len(histogram), num=len(histogram))
 		if plot:
 			plt.plot(x, histogram, self.color)
 			plt.title("Signal histogram")
 			plt.grid()
 			plt.show()
-		return base_val, top_val
+		return np.argmax(histogram), np.argmin(histogram)
 
 	def compute_rise_time(self):
-		base_val, top_val = self.compute_histogram(plot=False)
-		print('base', base_val)
-		print('top', top_val)
+		base_index, top_index = self.compute_histogram(plot=False)
+		base_val = self.signal[base_index]
+		top_val = self.signal[top_index]
 		base_time = 'invalid'
 		top_time = 'invalid'
 		for i in range(len(self.signal)):
-			if(self.signal[i] == base_val):
+			if(base_val*1.08 <= self.signal[i] <= base_val*1.12):
 				base_time = i
-			if(self.signal[i] == top_val*0.90):
+			if(top_val*0.88 <= self.signal[i] <= top_val*0.92):
 				top_time = i
+				break
 		if(base_time == 'invalid' or top_time == 'invalid'):
 			print("Error, rise time cannot be measured")
 		else:
-			return 0.9*top_time - (0.1*top_time + base_time)
+			base_time = base_time/self.sample_rate
+			top_time = top_time/self.sample_rate
+			return abs(top_time - base_time)
+
+	def compute_fall_time(self):
+		base_index, top_index = self.compute_histogram(plot=False)
+		top_val = self.signal[top_index]
+		base_val = self.signal[base_index]
+		base_time = 'invalid'
+		top_time = 'invalid'
+		for i in range(len(self.signal)):
+			if(top_val*0.86 <= self.signal[i] <= base_val*0.94):
+				top_time = i
+			if(base_val*1.06 <= self.signal[i] <= base_val*1.14):
+				base_time = i
+		if(base_time == 'invalid' or top_time == 'invalid'):
+			print("Error, fall time cannot be measured")
+		else:
+			base_time = base_time/self.sample_rate
+			top_time = top_time/self.sample_rate
+			return abs(base_time - top_time)
 
 	def plot_fft(self, step=0.1):
 		y = np.fft.fft(self.signal)
-		x = np.linspace(-int(len(y)/2), int(len(y)/2), num=len(y))
+		x = np.linspace(-self.get_frequency(), self.get_frequency(), num=len(y))
 		plt.plot(x, y, self.color)
 		plt.xlabel("Frequency (Hz)")
 		plt.ylabel("Amplitude")
