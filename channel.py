@@ -6,7 +6,7 @@ import math
 
 # TODO:
 # fix compute_fall_time
-# fix frequency and period calc -> use FFT !!!!!!
+# fix frequency and period calc -> use FFT !!!!!! ->fixed
 # build UI
 # acquire real signals
 
@@ -65,8 +65,12 @@ class Channel():
 		return (self.get_max() - self.get_min())
 
 	def get_frequency(self):
-		auto_correlation = np.correlate(self.signal, self.signal, mode='full')
-		return np.argmax(auto_correlation)/self.sample_rate
+		signal_fft = np.fft.fft(self.signal)
+		signal_fft = abs(signal_fft)
+		frequency = np.argmax(signal_fft)/self.duration
+		print('freq:', frequency)
+		return frequency
+
 
 	def get_period(self):
 		return 1/self.get_frequency()
