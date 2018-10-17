@@ -71,7 +71,6 @@ class Channel():
         print('freq:', frequency)
         return frequency
 
-
     def get_period(self):
         return 1/self.get_frequency()
 
