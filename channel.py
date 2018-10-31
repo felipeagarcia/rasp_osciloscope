@@ -17,18 +17,27 @@ class Channel():
         self.signal = signal
         self.sample_rate = sample_rate
         self.duration = duration
+        self.frequency = self.get_frequency()
+        if self.frequency == 0:
+            print("Critical error, frequency = 0!")
+            self.frequency = 1
 
-    def show(self, step=0.1):
+    def show(self, step=0.1, save_fig=True):
         auto_correlation = np.correlate(self.signal, self.signal, mode='full')
         # limiting signal by its period
-        y = self.signal[:math.ceil(max(auto_correlation)/self.get_frequency())].copy()
+        y = self.signal[:math.ceil(max(auto_correlation)/self.frequency)].copy()
         x = np.linspace(0, self.get_period(), num=len(y))
         plt.plot(x, y, self.color)
         plt.xlabel("Time (s)")
         plt.ylabel("Voltage (V)")
         plt.title("Signal in time")
         plt.grid()
-        plt.show()
+        if(save_fig):
+            plt.savefig('imgs/time_plot.png')
+            plt.clf()
+        else:
+            plt.show()
+
 
     def animated_plot(self):
         fig, ax = plt.subplots()
@@ -68,11 +77,14 @@ class Channel():
         signal_fft = np.fft.fft(self.signal)
         signal_fft = abs(signal_fft)
         frequency = np.argmax(signal_fft)/self.duration
+        if frequency == 0:
+            signal_fft = signal_fft[1:]
+            frequency = np.argmax(signal_fft)/self.duration
         print('freq:', frequency)
         return frequency
 
     def get_period(self):
-        return 1/self.get_frequency()
+        return 1/self.frequency
 
     def compute_histogram(self, plot=True):
         histogram, bins = np.histogram(self.signal, bins=range(len(self.signal)), density=True)
@@ -99,7 +111,7 @@ class Channel():
         if(base_time == 'invalid' or top_time == 'invalid'):
             print("Error, rise time cannot be measured")
         else:
-            print('expected', np.arcsin(0.8)/(pi*self.get_frequency()))
+            print('expected', np.arcsin(0.8)/(pi*self.frequency))
             return abs(top_time - base_time)*self.duration/self.sample_rate
 
     def compute_fall_time(self):
@@ -116,12 +128,16 @@ class Channel():
         else:
             return abs(base_time - top_time)*self.duration/self.sample_rate
 
-    def plot_fft(self, step=0.1):
+    def plot_fft(self, step=0.1, save_fig=True):
         y = np.fft.fft(self.signal)
-        x = np.linspace(-self.get_frequency(), self.get_frequency(), num=len(y))
+        x = np.linspace(-self.frequency, self.frequency, num=len(y))
         plt.plot(x, y, self.color)
         plt.xlabel("Frequency (Hz)")
         plt.ylabel("Amplitude")
         plt.title("Signal FFT")
         plt.grid()
-        plt.show()
+        if(save_fig):
+            plt.savefig('imgs/freq_plot.png')
+            plt.clf()
+        else:
+            plt.show()
