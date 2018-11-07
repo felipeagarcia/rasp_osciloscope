@@ -1,13 +1,13 @@
 from user_interface import GUI
 from controller import controller
 
-
 class model():
     def __init__(self):
         self.ctrl = controller()
         self.ctrl.show_signal()
         self.gui = GUI(1000, 600)
         self.add_buttons()
+        self.gui.txt_freq.setText("Frequência: " + str(self.ctrl.ch.frequency) + " Hz")
         self.gui.show()
 
     def show_signal(self):
@@ -26,6 +26,7 @@ class model():
 
     def update(self):
         self.ctrl.update()
+        self.gui.txt_freq.setText("Frequência: " + str(self.ctrl.ch.frequency) + " Hz")
         self.ctrl.show_signal()
         self.gui.set_image('imgs/time_plot.png')
 

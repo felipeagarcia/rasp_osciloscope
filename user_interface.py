@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (QWidget, QToolTip, QVBoxLayout,
     QPushButton, QApplication, QDesktopWidget, QLabel, QHBoxLayout)
 from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.QtCore import pyqtSlot, Qt
-
+from PyQt5 import QtCore
 
 class GUI():
     def __init__(self, window_height, window_width):
@@ -29,11 +29,10 @@ class GUI():
         button.resize(button.sizeHint())
         button.move(pos_x, pos_y)
 
-    def add_text(self, text, pos_x, pos_y):
-        self.window.label = QLabel(text)
-        self.window.label.move(pos_x, pos_y)
-        self.window.layout.addWidget(self.window.label)
-        self.window.setLayout(self.window.layout)
+    def add_text(self, text, x, y):
+        text = QLabel(text, self.window)
+        text.setGeometry(QtCore.QRect(x, y, 300, 20))
+        return text
 
     def init_ui(self):
         self.app = QApplication(sys.argv)
@@ -44,15 +43,16 @@ class GUI():
         self.window.layout = QVBoxLayout() 
         self.label = QLabel(self.window)
         self.hbox = QHBoxLayout(self.window)
-        text = QLabel("Comandos")
-        text.setAlignment(Qt.AlignHCenter)
-        text2 = QLabel("Medidas")
-        text2.setAlignment(Qt.AlignVCenter)
+        self.add_text("Comandos", 850, 10)
+        self.add_text("Medidas", 750, 300)
         self.hbox.addWidget(self.label)
-        self.hbox.addWidget(text)
-        self.hbox.addWidget(text2)
         self.window.setLayout(self.hbox)
         self.set_image('imgs/time_plot.png')
+        self.txt_freq = self.add_text("Frequência:", 720, 350)
+        self.txt_per = self.add_text("Período:", 720, 370)
+        self.txt_vmax = self.add_text("Tensão Máxima:", 720, 390)
+        self.txt_vmin = self.add_text("Tensão Mínima:", 720, 350)
+        #self.add_text("Frequência:", Qt.AlignLeft)
         self.center()
 
     def add_buttons(self):
