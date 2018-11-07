@@ -49,9 +49,9 @@ class GUI():
         self.window.setLayout(self.hbox)
         self.set_image('imgs/time_plot.png')
         self.txt_freq = self.add_text("Frequência:", 720, 350)
-        self.txt_per = self.add_text("Período:", 720, 370)
-        self.txt_vmax = self.add_text("Tensão Máxima:", 720, 390)
-        self.txt_vmin = self.add_text("Tensão Mínima:", 720, 350)
+        # self.txt_per = self.add_text("Período:", 720, 370)
+        # self.txt_vmax = self.add_text("Tensão Máxima:", 720, 390)
+        # self.txt_vmin = self.add_text("Tensão Mínima:", 720, 350)
         #self.add_text("Frequência:", Qt.AlignLeft)
         self.center()
 

@@ -38,29 +38,6 @@ class Channel():
         else:
             plt.show()
 
-
-    def animated_plot(self):
-        fig, ax = plt.subplots()
-        auto_correlation = np.correlate(self.signal, self.signal, mode='full')
-        # limiting signal by its period
-        y = self.signal[:math.ceil(max(auto_correlation))].copy()
-        x = np.linspace(0, self.duration, num=len(y))
-        line, = ax.plot(x, y, self.color)
-
-
-        def animate(i):
-            line.set_ydata(np.sin(x + i/10.0))  # update the data
-            return line,
-
-
-        # Init only required for blitting to give a clean slate.
-        def init():
-            line.set_ydata(np.ma.array(x, mask=True))
-            return line,
-        ani = animation.FuncAnimation(fig, animate, np.arange(0, len(y)), init_func=init,
-                                      interval=25, blit=True)
-        plt.show()
-
     def get_signal(self):
         return self.signal
 
