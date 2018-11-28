@@ -21,7 +21,7 @@ class controller():
         myrecording = np.array(myrecording)
         ch1 = myrecording[:,0]
         ch2 = myrecording[:,1]
-        self.signal = ch1 - ch2
+        self.signal = ch1
         print(myrecording)
         self.ch = Channel(1, 'b-', self.signal, self.RATE, self.duration)
 
@@ -52,6 +52,9 @@ class controller():
     def show_hist(self):
         self.ch.compute_histogram()
 
+    def eye_diagram(self):
+        self.ch.eye_diagram()
+
     def print_max(self):
         max_val = self.ch.get_max()
         print("Max Value:", max_val)
@@ -66,6 +69,7 @@ class controller():
         myrecording = sd.rec(int(self.duration * self.RATE))
         print('Recording...')
         sd.wait()
-        myrecording = np.reshape(myrecording, len(myrecording)*len(myrecording[0]))
-        self.signal = myrecording
+        ch1 = myrecording[:,0]
+        ch2 = myrecording[:,1]
+        self.signal = ch1
         self.ch = Channel(1, 'b-', self.signal, self.RATE, self.duration)

@@ -11,6 +11,7 @@ class Channel():
         self.id = identifier
         self.color = color
         self.signal = signal
+        self.signal *= 26
         self.sample_rate = sample_rate
         self.duration = duration
         self.frequency = self.get_frequency()
@@ -20,13 +21,14 @@ class Channel():
 
     def show(self, save_fig=True):
         # limiting signal by its period
-        y = self.signal[:int(self.get_period()*self.sample_rate/self.duration)].copy()
+        y = self.signal[:int(self.get_period()*self.sample_rate)].copy()
         x = np.linspace(0, self.get_period(), num=len(y))
+        plt.Figure()
         plt.plot(x, y, self.color)
         plt.xlabel("Tempo (s)")
         plt.ylabel("Tensão (mV)")
         plt.title("Sinal no Tempo")
-        plt.ylim(-1.2, 1.2)
+        plt.ylim(-26, 26)
         plt.grid(True)
         if(save_fig):
             plt.savefig('imgs/time_plot.png')
@@ -38,6 +40,7 @@ class Channel():
         # limiting signal by its period
         y = self.signal
         x = np.linspace(0, self.duration, num=len(y))
+        plt.Figure()
         plt.plot(x, y, self.color)
         plt.xlabel("Tempo (s)")
         plt.ylabel("Tensão (mV)")
@@ -52,8 +55,9 @@ class Channel():
 
     def show_scaled(self, save_fig=True):
         # limiting signal by its period
-        y = self.signal[:int(self.get_period()*self.sample_rate/self.duration)].copy()
+        y = self.signal[:int(self.get_period()*self.sample_rate)].copy()
         x = np.linspace(0, self.get_period(), num=len(y))
+        plt.Figure()
         plt.plot(x, y, self.color)
         plt.xlabel("Tempo (s)")
         plt.ylabel("Tensão (mV)")
@@ -64,6 +68,34 @@ class Channel():
             plt.clf()
         else:
             plt.show()
+
+    def eye_diagram(self, save_fig=True):
+        zeros = self.get_zeros()
+        plt.Figure()
+        period = self.get_period()
+        for i in range(len(zeros) - 1):
+            wave = self.signal[zeros[i]:zeros[i+1]]
+            x = np.linspace(0, period, num=len(wave))
+            plt.plot(x, wave, self.color)
+        plt.xlabel("Tempo (s)")
+        plt.ylabel("Tensão (mV)")
+        plt.title("Diagrama de olho")
+        plt.grid(True)
+        if(save_fig):
+            plt.savefig('imgs/eye_plot.png')
+            plt.clf()
+        else:
+            plt.show()
+
+    def get_zeros(self):
+        zeros = []
+        norm_signal = self.signal/26
+        for i in range(len(norm_signal)):
+            if(-0.05 <= norm_signal[i] <= 0.05):
+                zeros.append(i)
+        zeros = np.array(zeros)
+        return zeros
+
     def get_signal(self):
         return self.signal
 
@@ -93,6 +125,7 @@ class Channel():
         histogram, bins = np.histogram(self.signal)
         x = np.linspace(0, len(bins), num=len(histogram))
         if plot:
+            plt.Figure()
             plt.hist(bins)
             plt.title("Histograma")
             plt.grid(True)
@@ -140,6 +173,7 @@ class Channel():
     def plot_fft(self, step=0.1, save_fig=True):
         y = np.fft.fft(self.signal)
         x = np.linspace(-self.frequency, self.frequency, num=len(y))
+        plt.Figure()
         plt.plot(x, y, self.color)
         plt.xlabel("Frequência (Hz)")
         plt.ylabel("Amplitude")

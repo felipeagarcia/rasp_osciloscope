@@ -10,9 +10,9 @@ class model():
         self.gui.txt_freq.setText("Frequência: " + str(self.ctrl.ch.frequency) + " Hz")
         self.gui.txt_per.setText("Período: " + str(1/self.ctrl.ch.frequency) + " s")
         self.gui.txt_rise.setText("Subida: " + str(self.ctrl.ch.compute_rise_time()) + " s")
-        self.gui.txt_vmax.setText("Tensão Máxima: " + str(self.ctrl.ch.get_max()) + " V")
-        self.gui.txt_vmin.setText("Tensão Mínima: " + str(self.ctrl.ch.get_min()) + " V")
-        self.gui.txt_vpic.setText("Tensão Pico a Pico: " + str(self.ctrl.ch.get_peak_to_peak()) + " V")
+        self.gui.txt_vmax.setText("Tensão Máxima: " + str(self.ctrl.ch.get_max()) + " mV")
+        self.gui.txt_vmin.setText("Tensão Mínima: " + str(self.ctrl.ch.get_min()) + " mV")
+        self.gui.txt_vpic.setText("Tensão Pico a Pico: " + str(self.ctrl.ch.get_peak_to_peak()) + " mV")
         self.gui.show()
 
     def show_signal(self):
@@ -42,16 +42,20 @@ class model():
 
     def show_hist(self):
         self.ctrl.show_hist()
-        self.gui.set_image('imgs/histogram.png')        
+        self.gui.set_image('imgs/histogram.png')
+
+    def show_eye(self):
+        self.ctrl.eye_diagram()
+        self.gui.set_image('imgs/eye_plot.png')  
 
     def update(self):
         self.ctrl.update()
         self.gui.txt_freq.setText("Frequência: " + str(self.ctrl.ch.frequency) + " Hz")
         self.gui.txt_per.setText("Período: " + str(1/self.ctrl.ch.frequency) + " s")
         self.gui.txt_rise.setText("Subida: " + str(self.ctrl.ch.compute_rise_time()) + " s")
-        self.gui.txt_vmax.setText("Tensão Máxima: " + str(self.ctrl.ch.get_max()) + " V")
-        self.gui.txt_vmin.setText("Tensão Mínima: " + str(self.ctrl.ch.get_min()) + " V")
-        self.gui.txt_vpic.setText("Tensão Pico a Pico: " + str(self.ctrl.ch.get_peak_to_peak()) + " V")
+        self.gui.txt_vmax.setText("Tensão Máxima: " + str(self.ctrl.ch.get_max()) + " mV")
+        self.gui.txt_vmin.setText("Tensão Mínima: " + str(self.ctrl.ch.get_min()) + " mV")
+        self.gui.txt_vpic.setText("Tensão Pico a Pico: " + str(self.ctrl.ch.get_peak_to_peak()) + " mV")
         self.ctrl.show_signal()
         self.gui.set_image('imgs/time_plot.png')
 
@@ -59,7 +63,6 @@ class model():
         self.gui.create_button("Sinal no tempo", self.show_signal, 715, 50)
         self.gui.create_button("Sinal completo", self.show_all, 715, 100)
         self.gui.create_button("FFT", self.show_fft, 715, 150)
-        self.gui.create_button("Histograma", self.show_hist, 715, 200)
         self.gui.create_button("Auto Scale", self.auto_scale, 865, 50)
-        self.gui.create_button("Tempo Real", self.live_plot, 865, 100)
+        self.gui.create_button("Eye Diagram", self.show_eye, 865, 100)
         self.gui.create_button("Medir Sinal", self.update, 865, 150)
