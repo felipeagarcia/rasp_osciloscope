@@ -1,14 +1,15 @@
-#!/usr/bin/env python3
-"""Plot the live microphone signal(s) with matplotlib.
+def live():
+    #!/usr/bin/env python3
+    """Plot the live microphone signal(s) with matplotlib.
 
-Matplotlib and NumPy have to be installed.
+    Matplotlib and NumPy have to be installed.
 
-"""
-import argparse
-import queue
-import sys
+    """
+    import argparse
+    import queue
+    import sys
 
-def live_plot():
+
     def int_or_str(text):
         """Helper function for argument parsing."""
         try:

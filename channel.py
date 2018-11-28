@@ -19,15 +19,14 @@ class Channel():
             self.frequency = 1
 
     def show(self, save_fig=True):
-        auto_correlation = np.correlate(self.signal, self.signal, mode='full')
         # limiting signal by its period
-        y = self.signal[:math.ceil(max(auto_correlation)/self.frequency)].copy()
+        y = self.signal[:int(self.get_period()*self.sample_rate/self.duration)].copy()
         x = np.linspace(0, self.get_period(), num=len(y))
         plt.plot(x, y, self.color)
         plt.xlabel("Tempo (s)")
-        plt.ylabel("Tensão (V)")
+        plt.ylabel("Tensão (mV)")
         plt.title("Sinal no Tempo")
-        plt.ylim(0, 1)
+        plt.ylim(-1.2, 1.2)
         plt.grid(True)
         if(save_fig):
             plt.savefig('imgs/time_plot.png')
@@ -36,15 +35,14 @@ class Channel():
             plt.show()
 
     def show_entire_signal(self, save_fig=True):
-        auto_correlation = np.correlate(self.signal, self.signal, mode='full')
         # limiting signal by its period
         y = self.signal
         x = np.linspace(0, self.duration, num=len(y))
         plt.plot(x, y, self.color)
         plt.xlabel("Tempo (s)")
-        plt.ylabel("Tensão (V)")
+        plt.ylabel("Tensão (mV)")
         plt.title("Sinal no Tempo")
-        plt.ylim(0, 1)
+        #plt.ylim(0, 1)
         plt.grid(True)
         if(save_fig):
             plt.savefig('imgs/full_plot.png')
@@ -53,13 +51,12 @@ class Channel():
             plt.show()
 
     def show_scaled(self, save_fig=True):
-        auto_correlation = np.correlate(self.signal, self.signal, mode='full')
         # limiting signal by its period
-        y = self.signal[:math.ceil(max(auto_correlation)/self.frequency)].copy()
+        y = self.signal[:int(self.get_period()*self.sample_rate/self.duration)].copy()
         x = np.linspace(0, self.get_period(), num=len(y))
         plt.plot(x, y, self.color)
         plt.xlabel("Tempo (s)")
-        plt.ylabel("Tensão (V)")
+        plt.ylabel("Tensão (mV)")
         plt.title("Sinal no Tempo")
         plt.grid(True)
         if(save_fig):

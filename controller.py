@@ -8,26 +8,22 @@ import queue
 import argparse
 import test as live
 
-def int_or_str(text):
-    """Helper function for argument parsing."""
-    try:
-        return int(text)
-    except ValueError:
-        return text
-
 
 class controller():
     def __init__(self):
         self.RATE = 44100
         self.duration = 0.5 #sec
         sd.default.samplerate = self.RATE
-        sd.default.channels = 1
-        myrecording = sd.rec(int(self.duration * self.RATE))
+        sd.default.channels = 2
+        myrecording = sd.rec(int(self.duration * self.RATE), dtype='float64')
         print('Recording...')
         sd.wait()
-        myrecording = np.reshape(myrecording, len(myrecording)*len(myrecording[0]))
-        self.signal = myrecording
-        self.ch = Channel(1, 'b-', self.signal, self.RATE, len(self.signal)/self.RATE)
+        myrecording = np.array(myrecording)
+        ch1 = myrecording[:,0]
+        ch2 = myrecording[:,1]
+        self.signal = ch1 - ch2
+        print(myrecording)
+        self.ch = Channel(1, 'b-', self.signal, self.RATE, self.duration)
 
     def audio_callback(self, indata, frames, time, status):
         """This is called (from a separate thread) for each audio block."""
@@ -51,7 +47,7 @@ class controller():
         self.ch.show_scaled()
 
     def live_plot(self):
-        live.live_plot()
+        live.live()
 
     def show_hist(self):
         self.ch.compute_histogram()
@@ -72,4 +68,4 @@ class controller():
         sd.wait()
         myrecording = np.reshape(myrecording, len(myrecording)*len(myrecording[0]))
         self.signal = myrecording
-        self.ch = Channel(1, 'b-', self.signal, self.RATE, len(self.signal)/self.RATE)
+        self.ch = Channel(1, 'b-', self.signal, self.RATE, self.duration)
