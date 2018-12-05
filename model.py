@@ -48,6 +48,10 @@ class model():
         self.ctrl.eye_diagram()
         self.gui.set_image('imgs/eye_plot.png')  
 
+    def show_corr(self):
+        self.ctrl.autocorr()
+        self.gui.set_image('imgs/corr_plot.png')  
+
     def update(self):
         self.ctrl.update()
         self.gui.txt_freq.setText("Frequência: " + str(self.ctrl.ch.frequency) + " Hz")
@@ -63,6 +67,7 @@ class model():
         self.gui.create_button("Sinal no tempo", self.show_signal, 715, 50)
         self.gui.create_button("Sinal completo", self.show_all, 715, 100)
         self.gui.create_button("FFT", self.show_fft, 715, 150)
+        self.gui.create_button("Auto Correlação", self.show_corr, 715, 200)
         self.gui.create_button("Auto Scale", self.auto_scale, 865, 50)
         self.gui.create_button("Eye Diagram", self.show_eye, 865, 100)
         self.gui.create_button("Medir Sinal", self.update, 865, 150)

@@ -53,6 +53,9 @@ class controller():
     def show_hist(self):
         self.ch.compute_histogram()
 
+    def autocorr(self):
+        self.ch.show_autocorrelation()
+
     def eye_diagram(self):
         self.ch.eye_diagram()
 

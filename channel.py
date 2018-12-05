@@ -69,6 +69,23 @@ class Channel():
         else:
             plt.show()
 
+
+    def show_autocorrelation(self, save_fig=True):
+        y = self.signal[:int(self.get_period()*self.sample_rate)*10].copy()
+        y = np.correlate(y, y, mode='full')
+        x = np.linspace(0, self.get_period()*10, num=len(y))
+        plt.Figure()
+        plt.plot(x, y, self.color)
+        plt.xlabel("Tempo (s)")
+        plt.ylabel("Tensão (mV)")
+        plt.title("Sinal no Tempo")
+        plt.grid(True)
+        if(save_fig):
+            plt.savefig('imgs/corr_plot.png')
+            plt.clf()
+        else:
+            plt.show()
+
     def eye_diagram(self, save_fig=True):
         zeros = self.get_zeros()
         plt.Figure()
@@ -91,8 +108,9 @@ class Channel():
         zeros = []
         norm_signal = self.signal/26
         for i in range(len(norm_signal)-1):
-            if(norm_signal[i] >= 0 and norm_signal[i+1] <= 0
-                or norm_signal[i] <= 0 and norm_signal[i+1] >= 0):
+            if(norm_signal[i] >= 0 and norm_signal[i+1] <= 0):
+                zeros.append(i+1)
+            elif(norm_signal[i] <= 0 and norm_signal[i+1] >= 0):
                 zeros.append(i)            
         zeros = np.array(zeros)
         return zeros
