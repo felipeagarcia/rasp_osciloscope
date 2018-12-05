@@ -22,6 +22,7 @@ class controller():
         ch1 = myrecording[:,0]
         ch2 = myrecording[:,1]
         self.signal = ch1
+        print(len(ch1))
         print(myrecording)
         self.ch = Channel(1, 'b-', self.signal, self.RATE, self.duration)
 

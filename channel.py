@@ -75,7 +75,7 @@ class Channel():
         period = self.get_period()
         for i in range(len(zeros) - 1):
             wave = self.signal[zeros[i]:zeros[i+1]]
-            x = np.linspace(0, period, num=len(wave))
+            x = np.linspace(0, period/2, num=len(wave))
             plt.plot(x, wave, self.color)
         plt.xlabel("Tempo (s)")
         plt.ylabel("Tensão (mV)")
@@ -90,9 +90,10 @@ class Channel():
     def get_zeros(self):
         zeros = []
         norm_signal = self.signal/26
-        for i in range(len(norm_signal)):
-            if(-0.05 <= norm_signal[i] <= 0.05):
-                zeros.append(i)
+        for i in range(len(norm_signal)-1):
+            if(norm_signal[i] >= 0 and norm_signal[i+1] <= 0
+                or norm_signal[i] <= 0 and norm_signal[i+1] >= 0):
+                zeros.append(i)            
         zeros = np.array(zeros)
         return zeros
 
